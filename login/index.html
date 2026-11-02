@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Masuk — Sistem Pembimbingan Tugas Akhir</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
+      padding:56px 24px 24px;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+    main{width:min(520px,100%);background:#fff;border:1px solid #dbe2ea;
+      border-radius:14px;box-shadow:0 8px 28px rgba(15,23,42,.08);padding:32px;text-align:center}
+    .logo{width:76px;height:76px;margin:0 auto 18px;border-radius:50%;background:#2563eb;
+      color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+    h1{margin:0;font-size:24px}
+    p{line-height:1.6;color:#64748b}
+    .panel{margin-top:24px;padding:20px;border:1px solid #dbe2ea;border-radius:10px;background:#f8fafc}
+    #googleButton{display:flex;justify-content:center;min-height:44px}
+    .status{margin-top:18px;padding:12px;border-radius:8px;text-align:left;font-size:14px}
+    .info{background:#eff6ff;color:#1e3a8a}
+    .ok{background:#ecfdf5;color:#166534}
+    .error{background:#fef2f2;color:#991b1b}
+    a{color:#2563eb;font-weight:700;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .fallback{margin-top:18px;font-size:13px}
+  </style>
+</head>
+<body>
+<main>
+  <div class="logo">TA</div>
+  <h1>Sistem Pembimbingan Tugas Akhir</h1>
+  <p>Masuk menggunakan akun Google yang terdaftar pada sistem.</p>
+
+  <section class="panel">
+    <div id="googleButton"></div>
+    <div id="status" class="status info">
+      Memuat Google Sign-In...
+    </div>
+  </section>
+  <p class="fallback"><a href="../aplikasi/">Tentang aplikasi</a> · <a href="../privasi/">Kebijakan privasi</a> · <a href="../ketentuan/">Ketentuan penggunaan</a></p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(window.location.search);
+  var clientId = String(params.get('clientId') || '').trim();
+  // Fixed SERVER target: query-string tampering must not redirect credentials
+  // to an arbitrary third-party endpoint.
+  var serverUrl =
+    'https://script.google.com/macros/s/' +
+    'AKfycbxvxwSGxgAY54pr1iey7_PNiEB0Fi0pHM2lapKB__q7N8QGRr0RlyL6-kfzZXvyrk7u1Q' +
+    '/exec?mode=production-gis-login';
+
+  var statusEl = document.getElementById('status');
+  var googleButton = document.getElementById('googleButton');
+  function setStatus(text, type) {
+    statusEl.textContent = text;
+    statusEl.className = 'status ' + type;
+  }
+
+  if (!/^[A-Za-z0-9._-]+\.apps\.googleusercontent\.com$/.test(clientId)) {
+    setStatus('OAuth Client ID tidak valid.', 'error');
+    return;
+  }
+
+  function kirimTokenKeServer(credential) {
+    if (!credential) {
+      setStatus('Google tidak mengembalikan ID token.', 'error');
+      return;
+    }
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = serverUrl;
+    form.target = '_top';
+    form.style.display = 'none';
+
+    var modeInput = document.createElement('input');
+    modeInput.type = 'hidden';
+    modeInput.name = 'mode';
+    modeInput.value = 'production-gis-login';
+
+    var tokenInput = document.createElement('input');
+    tokenInput.type = 'hidden';
+    tokenInput.name = 'id_token';
+    tokenInput.value = credential;
+
+    form.appendChild(modeInput);
+    form.appendChild(tokenInput);
+    document.body.appendChild(form);
+
+    setStatus(
+      'Identitas Google diterima. Memverifikasi dan menyiapkan sesi...',
+      'ok'
+    );
+
+    form.submit();
+  }
+
+  function initialize() {
+    if (
+      !window.google ||
+      !window.google.accounts ||
+      !window.google.accounts.id
+    ) {
+      setStatus(
+        'Google Sign-In belum tersedia. Silakan refresh atau gunakan login lama.',
+        'error'
+      );
+      return;
+    }
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: function (response) {
+          kirimTokenKeServer(
+            response && response.credential
+              ? response.credential
+              : ''
+          );
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      window.google.accounts.id.renderButton(
+        googleButton,
+        {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left'
+        }
+      );
+
+      setStatus('Silakan pilih akun Google untuk masuk.', 'info');
+    } catch (error) {
+      setStatus(
+        error && error.message
+          ? 'Google Sign-In gagal: ' + error.message
+          : 'Google Sign-In gagal diinisialisasi.',
+        'error'
+      );
+    }
+  }
+
+  var attempts = 0;
+  var timer = window.setInterval(function () {
+    attempts++;
+
+    if (
+      window.google &&
+      window.google.accounts &&
+      window.google.accounts.id
+    ) {
+      window.clearInterval(timer);
+      initialize();
+    } else if (attempts >= 50) {
+      window.clearInterval(timer);
+      setStatus(
+        'Google Sign-In tidak tersedia. Silakan gunakan login lama.',
+        'error'
+      );
+    }
+  }, 200);
+})();
+</script>
+</body>
+</html>
