@@ -1,5 +1,23 @@
 # ruangbimbing.my.id — situs pendukung produksi
 
+## Pembaruan logo halaman login — 2 November 2026
+
+Halaman `/login/` membaca `mode=branding-publik` dari SERVER produksi yang
+sudah tersedia. Logo portal diambil sebagai data URL gambar PNG/JPEG/WebP
+tervalidasi, tanpa cookie/kredensial Google. Pembacaan publik memperoleh
+HTTP200, valid:true, logo tersedia dan Access-Control-Allow-Origin:*.
+Logo memakai object-fit:contain agar tidak terpotong lingkaran bawaan.
+Tempat logo kosong selama pemuatan; TA hanya fallback bila logo kosong/gagal.
+Fetch dibatasi12 detik dan terpisah dari inisialisasi Google Sign-In.
+
+Kode Client ID, inisialisasi GIS, callback, form ID token serta target SERVER
+tidak diubah. Tidak mengubah Apps Script SERVER298/AUTH299, database, scope
+OAuth atau pengaturan Google Cloud. Perbaikan tampilan produksi tetap dapat
+dilakukan melalui source/PR dan publikasi Pages. Pemeriksaan source/HTTP dan
+pratinjau visual dicatat terpisah dari pengujian login; tidak menjalankan tes.
+
+Riwayat penyiapan awal di bawah ini bukan status deployment login terbaru.
+
 Sumber halaman disalin dari repository milik pengguna
 `r4hm4tD3ddy/sistem-asistensi-gis-diagnostic`, commit `d80ee58`.
 Repository terpisah ini menyiapkan hostname baru tanpa mengubah canonical
@@ -10,7 +28,7 @@ GitHub Pages atau JavaScript login yang sedang dipakai produksi.
 | `/` dan `/aplikasi/` | Informasi aplikasi dan tautan portal Apps Script produksi |
 | `/privasi/` | Penggunaan data, penyimpanan dan pencabutan koneksi |
 | `/ketentuan/` | Ketentuan penggunaan |
-| `/login/` | Salinan login GIS; script identik sumber, belum dialihkan dari aplikasi |
+| `/login/` | Login GIS produksi; logo mengikuti branding publik portal |
 
 Nama aplikasi tetap Sistem Pembimbingan Tugas Akhir. Domain tidak otomatis
 mengubah nama/brand aplikasi, database, Client ID atau callback Drive.
