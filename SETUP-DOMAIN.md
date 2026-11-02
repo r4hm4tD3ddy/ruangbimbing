@@ -1,5 +1,16 @@
 # ruangbimbing.my.id — situs pendukung produksi
 
+## Logo seluruh halaman informasi — 2 November 2026
+
+Pembaca logo publik dipusatkan pada `assets/branding.js`, dipakai homepage,
+`/aplikasi/`, `/privasi/`, `/ketentuan/` dan `/login/`. Semua marker TA menjadi
+logo portal tersimpan, dengan tempat kosong saat menunggu serta fallback bila
+logo gagal/kosong. Ukuran header44px dan login76px memakai object-fit:contain.
+Pembacaan publik tanpa kredensial, timeout12 detik dan validasi data URL tetap.
+Blok autentikasi login dibandingkan literal: tidak berubah. Tidak mengubah
+konten kebijakan/ketentuan, callback OAuth atau Apps Script untuk perubahan ini.
+Source/sintaks dan pratinjau statis Ketentuan diperiksa; login tidak dijalankan.
+
 ## Pembaruan logo halaman login — 2 November 2026
 
 Halaman `/login/` membaca `mode=branding-publik` dari SERVER produksi yang
