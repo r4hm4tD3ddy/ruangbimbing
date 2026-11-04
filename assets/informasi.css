@@ -3,3 +3,4 @@
 
 /* Shared portal logo on every public information page. */
 .mark[aria-busy="true"],.mark.has-portal-logo{background:transparent}.mark.has-portal-logo{border-radius:0}.mark img{display:block;width:100%;height:100%;object-fit:contain}
+[data-portal-logo]:not(.has-portal-logo){visibility:hidden}
