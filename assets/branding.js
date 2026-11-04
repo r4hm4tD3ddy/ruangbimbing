@@ -12,7 +12,8 @@
 
   function fallback(logo) {
     logo.classList.remove('has-portal-logo');
-    logo.textContent = 'TA';
+    logo.replaceChildren();
+    logo.style.visibility = 'hidden';
     logo.setAttribute('aria-busy', 'false');
   }
 
@@ -38,6 +39,7 @@
       image.onload = function () {
         logo.replaceChildren(image);
         logo.classList.add('has-portal-logo');
+        logo.style.visibility = 'visible';
         logo.setAttribute('aria-busy', 'false');
       };
       image.onerror = function () { fallback(logo); };
